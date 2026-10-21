@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>StudyDeck — Student Productivity Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ============ TOP BAR ============ -->
+<header class="topbar">
+  <div class="brand">
+    <div class="logo">◆</div>
+    <div>
+      <h1>StudyDeck</h1>
+      <div class="sub" id="today-label">—</div>
+    </div>
+  </div>
+
+  <div class="search">
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+    <input id="search" type="search" placeholder="Search tasks…  ( / )" autocomplete="off" spellcheck="false">
+  </div>
+
+  <div class="actions">
+    <button class="icon-btn" id="theme-btn" title="Toggle theme (T)" aria-label="Toggle theme">☾</button>
+    <button class="icon-btn" id="help-btn" title="Keyboard shortcuts (?)" aria-label="Keyboard shortcuts">⌘</button>
+    <button class="btn primary" id="new-btn" title="New task (N)">+ <span class="lbl">New task</span></button>
+  </div>
+</header>
+
+<main>
+  <!-- ============ OVERVIEW ============ -->
+  <section class="overview">
+    <div class="card ring-card">
+      <div class="ring-wrap">
+        <svg class="ring" viewBox="0 0 100 100" aria-hidden="true">
+          <defs>
+            <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="var(--accent)"/>
+              <stop offset="100%" stop-color="#b46bff"/>
+            </linearGradient>
+          </defs>
+          <circle class="bg" cx="50" cy="50" r="40"/>
+          <circle class="fg" id="ring-fg" cx="50" cy="50" r="40"/>
+        </svg>
+        <div class="ring-center">
+          <div class="pct" id="ring-pct">0%</div>
+          <div class="lbl">today</div>
+        </div>
+      </div>
+      <div class="ring-text">
+        <div class="t" id="ring-title">Loading…</div>
+        <div class="s" id="ring-sub">—</div>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat" style="--c: var(--accent)">
+        <div class="k">Due today</div>
+        <div class="v" id="stat-today">0</div>
+        <div class="h" id="stat-today-sub">nothing scheduled</div>
+      </div>
+      <div class="stat" style="--c: var(--high)">
+        <div class="k">Overdue</div>
+        <div class="v" id="stat-overdue">0</div>
+        <div class="h" id="stat-overdue-sub">all caught up</div>
+      </div>
+      <div class="stat" style="--c: var(--medium)">
+        <div class="k">Upcoming</div>
+        <div class="v" id="stat-upcoming">0</div>
+        <div class="h" id="stat-upcoming-sub">next 7 days</div>
+      </div>
+      <div class="stat" style="--c: var(--low)">
+        <div class="k">Done today</div>
+        <div class="v" id="stat-done">0</div>
+        <div class="h" id="stat-done-sub">keep going</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TOOLBAR ============ -->
+  <section class="toolbar">
+    <div class="tabs" role="tablist">
+      <button class="tab active" id="tab-dashboard" data-view="dashboard" role="tab">Dashboard</button>
+      <button class="tab" id="tab-board" data-view="board" role="tab">Priority board</button>
+    </div>
+
+    <div class="filters">
+      <select class="chip" id="subject-filter" aria-label="Filter by subject"></select>
+
+      <button class="chip" data-priority="all">All priorities</button>
+      <button class="chip" data-priority="high"><span class="dot" style="--c: var(--high)"></span>High</button>
+      <button class="chip" data-priority="medium"><span class="dot" style="--c: var(--medium)"></span>Medium</button>
+      <button class="chip" data-priority="low"><span class="dot" style="--c: var(--low)"></span>Low</button>
+    </div>
+  </section>
+
+  <!-- ============ DASHBOARD VIEW ============ -->
+  <section class="view active" id="view-dashboard">
+    <div class="grid3">
+      <div>
+        <div class="col-head" style="--c: var(--high)">
+          <span class="bar"></span><h3>Overdue</h3>
+          <span class="count" id="count-overdue">0</span>
+        </div>
+        <div class="list" id="overdue-list"></div>
+      </div>
+
+      <div>
+        <div class="col-head" style="--c: var(--accent)">
+          <span class="bar"></span><h3>Today</h3>
+          <span class="count" id="count-today">0</span>
+        </div>
+        <div class="list" id="today-list"></div>
+      </div>
+
+      <div>
+        <div class="col-head" style="--c: var(--medium)">
+          <span class="bar"></span><h3>Upcoming</h3>
+          <span class="count" id="count-upcoming">0</span>
+        </div>
+        <div class="list" id="upcoming-list"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ BOARD VIEW ============ -->
+  <section class="view" id="view-board">
+    <div class="board">
+      <div class="board-col" data-priority="high">
+        <div class="col-head"><span class="bar"></span><h3>High</h3><span class="count">0</span></div>
+        <div class="list" data-priority="high"></div>
+      </div>
+      <div class="board-col" data-priority="medium">
+        <div class="col-head"><span class="bar"></span><h3>Medium</h3><span class="count">0</span></div>
+        <div class="list" data-priority="medium"></div>
+      </div>
+      <div class="board-col" data-priority="low">
+        <div class="col-head"><span class="bar"></span><h3>Low</h3><span class="count">0</span></div>
+        <div class="list" data-priority="low"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ============ TASK DIALOG ============ -->
+<dialog id="task-dialog">
+  <form id="task-form" method="dialog" class="dlg-body" novalidate>
+    <h2 id="dlg-title">New task</h2>
+
+    <label class="field">
+      <span>Title</span>
+      <input name="title" type="text" maxlength="140" placeholder="e.g. Finish problem set 4" required>
+    </label>
+
+    <label class="field">
+      <span>Subject</span>
+      <input name="subject" type="text" maxlength="40" list="subject-options" placeholder="e.g. Calculus II" required>
+      <datalist id="subject-options"></datalist>
+    </label>
+
+    <label class="field">
+      <span>Deadline</span>
+      <input name="deadline" type="datetime-local" required>
+    </label>
+
+    <div class="field">
+      <span>Priority</span>
+      <div class="seg">
+        <input type="radio" name="priority" id="p-high" value="high">
+        <label for="p-high" style="--c: var(--high)"><span class="dot"></span>High</label>
+
+        <input type="radio" name="priority" id="p-medium" value="medium" checked>
+        <label for="p-medium" style="--c: var(--medium)"><span class="dot"></span>Medium</label>
+
+        <input type="radio" name="priority" id="p-low" value="low">
+        <label for="p-low" style="--c: var(--low)"><span class="dot"></span>Low</label>
+      </div>
+    </div>
+
+    <div class="dlg-actions">
+      <button type="button" class="btn ghost" id="dlg-cancel">Cancel</button>
+      <button type="submit" class="btn primary">Save task</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- ============ SHORTCUTS DIALOG ============ -->
+<dialog id="help-dialog">
+  <div class="dlg-body">
+    <h2>Keyboard shortcuts</h2>
+    <div class="kbd-grid">
+      <div><kbd>N</kbd><span>New task</span></div>
+      <div><kbd>/</kbd><span>Focus search</span></div>
+      <div><kbd>T</kbd><span>Toggle theme</span></div>
+      <div><kbd>1</kbd><span>Dashboard view</span></div>
+      <div><kbd>2</kbd><span>Priority board</span></div>
+      <div><kbd>?</kbd><span>This dialog</span></div>
+      <div><kbd>Esc</kbd><span>Close dialog</span></div>
+      <div><kbd>⌘/Ctrl ↵</kbd><span>Save task</span></div>
+    </div>
+    <div class="dlg-actions">
+      <button class="btn primary" id="help-close">Got it</button>
+    </div>
+  </div>
+</dialog>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
